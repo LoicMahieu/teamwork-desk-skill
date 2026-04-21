@@ -17,19 +17,8 @@ import argparse
 import os
 import requests
 from datetime import datetime, timedelta, timezone
-from pathlib import Path
 from typing import Any, Dict, List, Optional, Tuple
 from dataclasses import dataclass
-
-try:
-    import yaml
-except ImportError:
-    yaml = None  # type: ignore[assignment]
-
-
-# ---------------------------------------------------------------------------
-# Config
-# ---------------------------------------------------------------------------
 
 @dataclass
 class TeamworkConfig:
@@ -40,20 +29,13 @@ class TeamworkConfig:
 class SupportCLI:
     THREAD_TYPES = {1: "message", 2: "forward", 3: "note", 4: "event"}
 
-    def __init__(self, config_path: str = "config.yml"):
-        self.config = self._load_config(config_path)
+    def __init__(self) -> None:
         self.teamwork = self._get_teamwork_config()
 
-    def _load_config(self, config_path: str) -> Dict[str, Any]:
-        config_file = Path(config_path)
-        if config_file.exists() and yaml is not None:
-            with open(config_file, "r", encoding="utf-8") as f:
-                return yaml.safe_load(f) or {}
-        return {}
-
-    def _get_teamwork_config(self) -> TeamworkConfig:
-        domain = self.config.get("teamwork", {}).get("domain") or os.getenv("TEAMWORK_DESK_DOMAIN")
-        api_key = self.config.get("teamwork", {}).get("api_key") or os.getenv("TEAMWORK_DESK_API_KEY")
+    @staticmethod
+    def _get_teamwork_config() -> TeamworkConfig:
+        domain = os.getenv("TEAMWORK_DESK_DOMAIN")
+        api_key = os.getenv("TEAMWORK_DESK_API_KEY")
         if not domain or not api_key:
             print("ERREUR: TEAMWORK_DESK_DOMAIN et TEAMWORK_DESK_API_KEY requis", file=sys.stderr)
             sys.exit(1)
@@ -382,7 +364,6 @@ def main():
         formatter_class=argparse.RawDescriptionHelpFormatter,
         epilog="Status names: active(1), waiting(3), on-hold(4), solved(5), closed(6), spam(7)",
     )
-    parser.add_argument("--config", default="config.yml", help="Config YAML (default: config.yml)")
     sub = parser.add_subparsers(dest="command")
 
     # -- scan ----------------------------------------------------------------
@@ -418,7 +399,7 @@ def main():
         parser.print_help()
         return
 
-    cli = SupportCLI(args.config)
+    cli = SupportCLI()
 
     # -- scan ----------------------------------------------------------------
     if args.command == "scan":

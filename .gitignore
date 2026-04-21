@@ -20,3 +20,7 @@ Icon
 
 
 .env
+.env.local
+.cursor/
+.env.local
+.cursor/
