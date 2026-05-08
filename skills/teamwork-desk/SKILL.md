@@ -18,25 +18,27 @@ Requires two env vars (check env, ask user if missing):
 
 Always prefer the CLI over raw curl. It handles auth, filtering, pagination, name resolution, and formatted output.
 
+The CLI script `support-cli.py` is co-located with this SKILL.md. Set `SKILL_DIR` to resolve it:
+
 ```bash
-chmod +x scripts/support-cli.py
-./scripts/support-cli.py --help
+SKILL_DIR=~/.cursor/skills/teamwork-desk
+python3 "$SKILL_DIR/support-cli.py" --help
 ```
 
 ### scan — List tickets
 
 ```bash
 # Active tickets in an inbox (last 14 days)
-./scripts/support-cli.py scan --inbox-id 4364 --status active --days 14
+python3 "$SKILL_DIR/support-cli.py" scan --inbox-id 4364 --status active --days 14
 
 # Active + Waiting on customer
-./scripts/support-cli.py scan --inbox-id 4364 --status active,waiting
+python3 "$SKILL_DIR/support-cli.py" scan --inbox-id 4364 --status active,waiting
 
 # All statuses, last 30 days, max 10 rows
-./scripts/support-cli.py scan --inbox-id 4364 --days 30 --limit 10
+python3 "$SKILL_DIR/support-cli.py" scan --inbox-id 4364 --days 30 --limit 10
 
 # No date filter (latest 50)
-./scripts/support-cli.py scan --inbox-id 4364 --days 0
+python3 "$SKILL_DIR/support-cli.py" scan --inbox-id 4364 --days 0
 ```
 
 **Status names for `--status`:** `active`(1), `waiting`(3), `on-hold`(4), `solved`(5), `closed`(6), `spam`(7)
@@ -45,13 +47,13 @@ chmod +x scripts/support-cli.py
 
 ```bash
 # Full ticket: header + all messages
-./scripts/support-cli.py read 92325990
+python3 "$SKILL_DIR/support-cli.py" read 92325990
 
 # Internal notes only
-./scripts/support-cli.py read 92325990 --notes-only
+python3 "$SKILL_DIR/support-cli.py" read 92325990 --notes-only
 
 # Header only (skip messages)
-./scripts/support-cli.py read 92325990 --no-messages
+python3 "$SKILL_DIR/support-cli.py" read 92325990 --no-messages
 ```
 
 **threadType values** (shown in message output):
@@ -67,10 +69,10 @@ chmod +x scripts/support-cli.py
 
 ```bash
 # Inline HTML body
-./scripts/support-cli.py post-note 92325990 --body '<p>Analysis here.</p>'
+python3 "$SKILL_DIR/support-cli.py" post-note 92325990 --body '<p>Analysis here.</p>'
 
 # From stdin (pipe)
-echo '<p>Note content</p>' | ./scripts/support-cli.py post-note 92325990
+echo '<p>Note content</p>' | python3 "$SKILL_DIR/support-cli.py" post-note 92325990
 ```
 
 > **CRITICAL — HTML required:** The note body MUST contain **HTML markup**, not plain text.
@@ -112,13 +114,13 @@ echo '<p>Note content</p>' | ./scripts/support-cli.py post-note 92325990
 
 ```bash
 # Change status
-./scripts/support-cli.py update 92325990 --status solved
+python3 "$SKILL_DIR/support-cli.py" update 92325990 --status solved
 
 # Assign agent
-./scripts/support-cli.py update 92325990 --agent 461854
+python3 "$SKILL_DIR/support-cli.py" update 92325990 --agent 461854
 
 # Multiple fields at once
-./scripts/support-cli.py update 92325990 --status on-hold --agent 461854 --priority high
+python3 "$SKILL_DIR/support-cli.py" update 92325990 --status on-hold --agent 461854 --priority high
 ```
 
 ## Output guidelines
